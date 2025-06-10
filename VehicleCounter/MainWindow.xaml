@@ -61,10 +61,11 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="TimeTextBlock" 
+                <TextBlock x:Name="CurrentTimeTextBlock" 
                            Grid.Column="0"
-                           Text="00:00 / 00:00"
+                           Text="00:00"
                            Style="{StaticResource MaterialDesignBody1TextBlock}"
                            VerticalAlignment="Center"
                            FontSize="10"
@@ -76,7 +77,16 @@
                         Value="0"
                         IsMoveToPointEnabled="True"
                         ValueChanged="VideoSlider_ValueChanged"
+                        PreviewMouseDown="VideoSlider_PreviewMouseDown"
+                        PreviewMouseUp="VideoSlider_PreviewMouseUp"
                         VerticalAlignment="Center"/>
+                <TextBlock x:Name="TotalTimeTextBlock" 
+                           Grid.Column="2"
+                           Text="00:00"
+                           Style="{StaticResource MaterialDesignBody1TextBlock}"
+                           VerticalAlignment="Center"
+                           FontSize="10"
+                           Margin="8,0,0,0"/>
             </Grid>
 
             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -88,11 +98,17 @@
                         <Setter Property="Margin" Value="4,0"/>
                     </Style>
                 </StackPanel.Resources>
+                <Button x:Name="RewindButton" Click="RewindButton_Click">
+                    <materialDesign:PackIcon Kind="Rewind10" Width="36" Height="36"/>
+                </Button>
                 <Button x:Name="PlayButton" Click="PlayButton_Click">
                     <materialDesign:PackIcon Kind="Play" Width="36" Height="36"/>
                 </Button>
                 <Button x:Name="PauseButton" Click="PauseButton_Click">
                     <materialDesign:PackIcon Kind="Pause" Width="36" Height="36"/>
+                </Button>
+                <Button x:Name="FastForwardButton" Click="FastForwardButton_Click">
+                    <materialDesign:PackIcon Kind="FastForward10" Width="36" Height="36"/>
                 </Button>
             </StackPanel>
             <ComboBox x:Name="SpeedComboBox" 
@@ -100,14 +116,17 @@
                       Grid.Column="3"
                       HorizontalAlignment="Right"
                       Width="60"
-                      Height="30">
+                      Height="30"
+                      SelectionChanged="SpeedComboBox_SelectionChanged">
                 <ComboBoxItem Content="0.25x"/>
                 <ComboBoxItem Content="0.5x"/>
                 <ComboBoxItem Content="1x" IsSelected="True"/>
                 <ComboBoxItem Content="2x"/>
                 <ComboBoxItem Content="4x"/>
-                <ComboBoxItem Content="6x"/>
+                <ComboBoxItem Content="8x"/>
                 <ComboBoxItem Content="10x"/>
+                <ComboBoxItem Content="12x"/>
+                <ComboBoxItem Content="16x"/>
             </ComboBox>
         </Grid>
 
