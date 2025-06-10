@@ -65,7 +65,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Name="CurrentTimeTextBlock" 
                            Grid.Column="0"
-                           Text="00:00"
+                           Text="00:00:00"
                            Style="{StaticResource MaterialDesignBody1TextBlock}"
                            VerticalAlignment="Center"
                            FontSize="10"
@@ -82,7 +82,7 @@
                         VerticalAlignment="Center"/>
                 <TextBlock x:Name="TotalTimeTextBlock" 
                            Grid.Column="2"
-                           Text="00:00"
+                           Text="00:00:00"
                            Style="{StaticResource MaterialDesignBody1TextBlock}"
                            VerticalAlignment="Center"
                            FontSize="10"

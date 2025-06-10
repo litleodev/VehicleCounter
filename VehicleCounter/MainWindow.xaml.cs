@@ -1,7 +1,9 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace VehicleCounter
 {
@@ -11,6 +13,9 @@ namespace VehicleCounter
     public partial class MainWindow : Window
     {
         private bool _isLoadedVideo = false;
+        private bool isDraggingSlider = false;
+        private DispatcherTimer timer;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,6 +35,7 @@ namespace VehicleCounter
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             VideoPlayer.Play();
+            timer.Start();
             PlayButton.Visibility = Visibility.Collapsed;
             PauseButton.Visibility = Visibility.Visible;
         }
@@ -37,6 +43,7 @@ namespace VehicleCounter
         private void PauseButton_Click(object sender, RoutedEventArgs e)
         {
             VideoPlayer.Pause();
+            timer.Stop();
             PauseButton.Visibility = Visibility.Collapsed;
             PlayButton.Visibility = Visibility.Visible;
         }
@@ -67,19 +74,28 @@ namespace VehicleCounter
             }
         }
 
-        private void VideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private async void VideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            
+            if (isDraggingSlider && VideoPlayer.NaturalDuration.HasTimeSpan)
+            {
+                VideoPlayer.Position = TimeSpan.FromSeconds(VideoSlider.Value - 0.001);
+                VideoPlayer.Play();
+                await Task.Delay(1);
+                VideoPlayer.Pause();
+                CurrentTimeTextBlock.Text = VideoPlayer.Position.ToString(@"hh\:mm\:ss");
+            }
         }
 
         private void VideoSlider_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-
+            isDraggingSlider = true;
         }
 
         private void VideoSlider_PreviewMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            
+            isDraggingSlider = false;
+            VideoPlayer.Position = TimeSpan.FromSeconds(VideoSlider.Value);
+            CurrentTimeTextBlock.Text = VideoPlayer.Position.ToString(@"hh\:mm\:ss");
         }
 
         private void SelectVideoButton_Click(object sender, RoutedEventArgs e)
@@ -109,7 +125,7 @@ namespace VehicleCounter
                 VideoPlayer.Source = new Uri(selectedPath, UriKind.Absolute);
                 VideoPlayer.LoadedBehavior = MediaState.Manual;
                 VideoPlayer.UnloadedBehavior = MediaState.Manual;
-
+                VideoPlayer.MediaOpened += VideoPlayer_MediaOpened;
                 VideoPlayer.Position = TimeSpan.FromSeconds(0);
                 VideoPlayer.Pause();
 
@@ -118,10 +134,31 @@ namespace VehicleCounter
                     PlayButton.IsEnabled = true;
                     VideoSlider.Value = 0;
                     VideoSlider.IsEnabled = true;
+                    RewindButton.IsEnabled = true;
+                    FastForwardButton.IsEnabled = true;
+                    timer = new DispatcherTimer
+                    {
+                        Interval = TimeSpan.FromMilliseconds(100)
+                    };
+                    timer.Tick += Timer_Tick;
+                    timer.Start();
                 }
                 PlayButton.Visibility = Visibility.Visible;
 
                 _isLoadedVideo = true;
+            }
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (VideoPlayer.NaturalDuration.HasTimeSpan)
+            {
+                VideoSlider.Value = VideoPlayer.Position.TotalSeconds;
+                CurrentTimeTextBlock.Text = VideoPlayer.Position.ToString(@"hh\:mm\:ss");
+            }
+            else
+            {
+                timer.Stop();
             }
         }
 
@@ -131,15 +168,6 @@ namespace VehicleCounter
             {
                 VideoSlider.Maximum = VideoPlayer.NaturalDuration.TimeSpan.TotalSeconds;
                 TotalTimeTextBlock.Text = VideoPlayer.NaturalDuration.TimeSpan.ToString(@"hh\:mm\:ss");
-            }
-        }
-
-        private void VideoPlayer_MediaTimeChanged(object sender, RoutedEventArgs e)
-        {
-            if (VideoPlayer.NaturalDuration.HasTimeSpan)
-            {
-                VideoSlider.Value = VideoPlayer.Position.TotalSeconds;
-                CurrentTimeTextBlock.Text = VideoPlayer.Position.ToString(@"hh\:mm\:ss");
             }
         }
 
