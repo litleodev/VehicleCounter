@@ -76,8 +76,6 @@
                         Minimum="0"
                         Value="0"
                         IsMoveToPointEnabled="True"
-                        ValueChanged="VideoSlider_ValueChanged"
-                        PreviewMouseDown="VideoSlider_PreviewMouseDown"
                         PreviewMouseUp="VideoSlider_PreviewMouseUp"
                         VerticalAlignment="Center"/>
                 <TextBlock x:Name="TotalTimeTextBlock" 
